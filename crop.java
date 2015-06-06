@@ -42,19 +42,44 @@ public class Crop {
 		this.sprayed = sprayed;
 	}
 	
-	public void grow(){
-	    if (!isInfested()&&getWater()>=1){
-	        setHeight(getHeight()+1);
-	        setWater(getWater()-1);
-	    }else if (isInfested()){
-	        setHeight(getHeight()-1);
-	        if (getHeight()==0){
+	public void clone(Farm newFarm,int i,int j){
+	    newFarm.crops[i][j].setWater(getWater());
+	    newFarm.crops[i][j].setHeight(getHeight());
+	    newFarm.crops[i][j].setInfested(isInfested());
+	    newFarm.crops[i][j].setSprayed(isSprayed());
+	}
+	
+	
+	private boolean adjInfested(Farm farm,int i, int j){
+	    int h=farm.getHeight();
+	    int w=farm.getWidth();
+	    for (int k1=i-1;k1<i+2;k1++){
+	        for (int k2=j-1;k2<j+2;k2++){
+	            if (k1<w&&k1>=0&&k2<h&&k2>=0&&k1!=i&&k2!=j){//if it is in the farm
+	                //System.out.printf("k1 %d k2 %d\n",k1,k2);
+	                if (farm.crops[k1][k2].isInfested()){
+	                    return true;
+	                }
+	            }
+	        }
+	    }
+	    return false;
+	}
+	
+	public void grow(Farm newFarm,int i,int j){
+	    if (adjInfested(newFarm,i,j)&&!newFarm.crops[i][j].isSprayed()&&(newFarm.crops[i][j].getHeight()!=0)){
+	        setInfested(true);
+	    }else if (!newFarm.crops[i][j].isInfested()&&newFarm.crops[i][j].getWater()>=1){
+	        setHeight(newFarm.crops[i][j].getHeight()+1);
+	        setWater(newFarm.crops[i][j].getWater()-1);
+	    }else if (newFarm.crops[i][j].isInfested()){
+	        setHeight(newFarm.crops[i][j].getHeight()-1);
+	        if (newFarm.crops[i][j].getHeight()==0){
 	            setInfested(false);
 	        }
-	    }else{
-	        
 	    }
 	}
+    
     
     public Crop(){
         //Initialise a new crop
